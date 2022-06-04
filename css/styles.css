@@ -48,6 +48,14 @@ body {
     transition: background-color 300ms ease;
 }
 
+.wrapper-list ul.list li.removed {
+    animation: collapseItem 300ms ease;
+}
+
+.wrapper-list ul.list li.hidden {
+    display: none;
+}
+
 .wrapper-list ul.list li:hover {
     background-color: #323b5c;
 }
@@ -57,17 +65,35 @@ body {
 }
 
 .wrapper-list ul.list .check {
-      background-color: #404a6e;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      margin-right: 20px;
-      cursor: pointer;
-      transition: background-color 200ms ease;  
+    position: relative;
+    background-color: #404a6e;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    margin-right: 20px;
+    cursor: pointer;
+    transition: background-color 200ms ease;  
 }
 
-.wrapper-list ul.list .check:hover {
+.wrapper-list ul.list .check:hover,
+.wrapper-list ul.list .done .check {
      background-color: #171d37;  
+}
+
+.wrapper-list ul.list .done .check:after {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    display: block;
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: green;
+}
+
+.wrapper-list ul.list .done .task {
+    text-decoration: line-through;
 }
 
 .wrapper-list button.remove {
@@ -104,4 +130,14 @@ body {
     font-family: "Roboto Condensed" Arial, Sans-serif;
     font-size: 1.2em;
     color: white;
+}
+
+@keyframes collapseItem {
+    0% {
+        transform: rotateX(0deg);
+    }
+
+    100% {
+        transform: rotateX(-90deg);
+    }
 }
