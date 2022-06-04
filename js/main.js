@@ -1,9 +1,13 @@
 
 const Main = {
     
+    tasks: [],
+
     init: function() {
         this.cacheSelector()
         this.bindEvents()
+        this.getStoraged()
+        this.buildTasks()
     },
 
     cacheSelector: function() {
@@ -23,10 +27,42 @@ const Main = {
         this.$inputTask.onkeypress = self.Events.inputTask_keypress.bind(self)
 
         this.$removeButtons.forEach(function(button){
-            button.onclick = self.Events.removeButtons_click
+            button.onclick = self.Events.removeButtons_click.bind(self)
         })
     },
 
+    getStoraged: function() {
+        const tasks = localStorage.getItem('tasks')
+
+        this.tasks = JSON.parse(tasks)
+    },
+
+    getTaskHtml: function(task) {
+        return `
+            <li>
+                <div class="check"></div>
+                <label class="task">
+                    ${task}
+                </label>
+                <button class=" remove" data-task="${task}"></button>
+            </li>
+        `
+    },
+
+    buildTasks: function() {
+        let html = ''
+
+        if (this.tasks !== null){
+            this.tasks.forEach(item => {
+                html += this.getTaskHtml(item.task)
+            })
+        }
+
+        this.$list.innerHTML = html
+
+        this.cacheSelector()
+        this.bindEvents()
+    },
 
     Events: {
         checkButtom_click: function(e) {
@@ -46,24 +82,32 @@ const Main = {
             const value = e.target.value
 
             if (key === 'Enter') {
-                this.$list.innerHTML += `
-                    <li>
-                        <div class="check"></div>
-                        <label class="task">
-                            ${value}
-                        </label>
-                        <button class=" remove"></button>
-                    </li>
-                `
+                this.$list.innerHTML += this.getTaskHtml(value)
 
                 e.target.value = ''
 
-                this.init()
+                this.cacheSelector()
+                this.bindEvents()
+
+                let savedTasksObj = JSON.parse(localStorage.getItem('tasks'))
+
+                if (savedTasksObj === null) { savedTasksObj = [] }
+                const obj = [
+                    { task: value},
+                    ...savedTasksObj,
+                ]
+
+                localStorage.setItem('tasks', JSON.stringify(obj))
             }
         },
 
         removeButtons_click: function(e) {
             const li = e.target.parentElement
+            const value = e.target.dataset['task']
+
+            const newTasksState = this.tasks.filter(item => item.task !== value)
+            
+            localStorage.setItem('tasks', JSON.stringify(newTasksState))
 
             li.classList.add('removed')
 
